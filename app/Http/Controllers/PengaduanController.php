@@ -1,0 +1,110 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Pengaduan;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class PengaduanController extends Controller
+{
+    /**
+     * Menampilkan daftar pengaduan pengguna.
+     */
+    public function index()
+    {
+        // Menampilkan pengaduan yang diajukan oleh user yang sedang login
+        $pengaduans = Pengaduan::where('username', Auth::user()->username)->get();
+        return view('pengaduan.index', compact('pengaduans'));
+    }
+
+    /**
+     * Menampilkan form pembuatan pengaduan.
+     */
+    public function create()
+    {
+        return view('pengaduan.create');
+    }
+
+    /**
+     * Menyimpan pengaduan baru ke dalam database.
+     */
+    public function store(Request $request)
+    {
+        // Validasi input
+        $validatedData = $request->validate([
+            'nama' => 'required|string|max:225',
+            'nik' => 'required|string|min:16|max:16|unique:pengaduans,nik',
+            'tanggal_lahir' => 'required|date',
+            'umur' => 'required|integer',
+            'username' => 'required|string|max:100|unique:pengaduans,username',
+            'email' => 'required|email|max:100|unique:pengaduans,email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        // Simpan data pengaduan
+        Pengaduan::create($validatedData);
+
+        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dibuat');
+    }
+
+    /**
+     * Menampilkan pengaduan tertentu.
+     */
+    public function show(Pengaduan $pengaduan)
+    {
+        // Cek apakah pengguna yang login memiliki akses (pengguna atau admin)
+        if (Auth::user()->is_admin || Auth::user()->username == $pengaduan->username) {
+            return view('pengaduan.show', compact('pengaduan'));
+        }
+
+        return redirect()->route('pengaduan.index')->with('error', 'Anda tidak memiliki akses ke pengaduan ini');
+    }
+
+    /**
+     * Menampilkan form edit pengaduan.
+     */
+    public function edit(Pengaduan $pengaduan)
+    {
+        if (Auth::user()->username == $pengaduan->username) {
+            return view('pengaduan.edit', compact('pengaduan'));
+        }
+
+        return redirect()->route('pengaduan.index')->with('error', 'Anda tidak memiliki akses untuk mengubah pengaduan ini');
+    }
+
+    /**
+     * Memperbarui pengaduan di database.
+     */
+    public function update(Request $request, Pengaduan $pengaduan)
+    {
+        if (Auth::user()->username == $pengaduan->username) {
+            $validatedData = $request->validate([
+                'nama' => 'required|string|max:225',
+                'nik' => 'required|string|min:16|max:16|unique:pengaduans,nik,' . $pengaduan->id,
+                'tanggal_lahir' => 'required|date',
+                'umur' => 'required|integer',
+                'username' => 'required|string|max:100|unique:pengaduans,username,' . $pengaduan->id,
+                'email' => 'required|email|max:100|unique:pengaduans,email,' . $pengaduan->id,
+            ]);
+
+            $pengaduan->update($validatedData);
+            return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil diperbarui');
+        }
+
+        return redirect()->route('pengaduan.index')->with('error', 'Anda tidak memiliki akses untuk mengubah pengaduan ini');
+    }
+
+    /**
+     * Menghapus pengaduan dari database.
+     */
+    public function destroy(Pengaduan $pengaduan)
+    {
+        if (Auth::user()->is_admin || Auth::user()->username == $pengaduan->username) {
+            $pengaduan->delete();
+            return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus');
+        }
+
+        return redirect()->route('pengaduan.index')->with('error', 'Anda tidak memiliki akses untuk menghapus pengaduan ini');
+    }
+}
