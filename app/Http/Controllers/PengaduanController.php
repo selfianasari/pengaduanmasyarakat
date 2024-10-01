@@ -14,8 +14,12 @@ class PengaduanController extends Controller
     public function index()
     {
         // Menampilkan pengaduan yang diajukan oleh user yang sedang login
-        $pengaduans = Pengaduan::where('username', Auth::user()->username)->get();
-        return view('pengaduan.index', compact('pengaduans'));
+        if (Auth::check()) {
+            $pengaduans = Pengaduan::where('username', Auth::user()->username)->get();
+            return view('pengaduan.index', compact('pengaduans'));
+        }
+
+        return redirect()->route('login')->with('error', 'Silakan login untuk melihat pengaduan.');
     }
 
     /**
@@ -37,10 +41,13 @@ class PengaduanController extends Controller
             'nik' => 'required|string|min:16|max:16|unique:pengaduans,nik',
             'tanggal_lahir' => 'required|date',
             'umur' => 'required|integer',
-            'username' => 'required|string|max:100|unique:pengaduans,username',
+            'username' => 'required|string|max:100',
             'email' => 'required|email|max:100|unique:pengaduans,email',
             'password' => 'required|string|min:8',
         ]);
+
+        // Tambahkan username dari user yang sedang login
+        $validatedData['username'] = Auth::user()->username;
 
         // Simpan data pengaduan
         Pengaduan::create($validatedData);
@@ -51,8 +58,10 @@ class PengaduanController extends Controller
     /**
      * Menampilkan pengaduan tertentu.
      */
-    public function show(Pengaduan $pengaduan)
+    public function show($id)
     {
+        $pengaduan = Pengaduan::findOrFail($id);
+
         // Cek apakah pengguna yang login memiliki akses (pengguna atau admin)
         if (Auth::user()->is_admin || Auth::user()->username == $pengaduan->username) {
             return view('pengaduan.show', compact('pengaduan'));
@@ -79,12 +88,12 @@ class PengaduanController extends Controller
     public function update(Request $request, Pengaduan $pengaduan)
     {
         if (Auth::user()->username == $pengaduan->username) {
+            // Validasi input
             $validatedData = $request->validate([
                 'nama' => 'required|string|max:225',
                 'nik' => 'required|string|min:16|max:16|unique:pengaduans,nik,' . $pengaduan->id,
                 'tanggal_lahir' => 'required|date',
                 'umur' => 'required|integer',
-                'username' => 'required|string|max:100|unique:pengaduans,username,' . $pengaduan->id,
                 'email' => 'required|email|max:100|unique:pengaduans,email,' . $pengaduan->id,
             ]);
 

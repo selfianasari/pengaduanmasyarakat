@@ -4,8 +4,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PengaduanController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
 Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
-Route::get('/page2', [App\Http\Controllers\HomeController::class, 'index'])->name('page2');
+Route::get('/daftarpengaduan', [App\Http\Controllers\PengaduanController::class, 'index'])->name('daftarpengaduan');
 
 Route::middleware('auth')->group(function () {
     // Route untuk pengguna biasa
