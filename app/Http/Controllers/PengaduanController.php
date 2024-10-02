@@ -19,7 +19,7 @@ class PengaduanController extends Controller
             return view('pengaduan.index', compact('pengaduans'));
         }
 
-        return redirect()->route('login')->with('error', 'Silakan login untuk melihat pengaduan.');
+        //return redirect()->route('login')->with('error', 'Silakan login untuk melihat pengaduan.');//
     }
 
     /**
