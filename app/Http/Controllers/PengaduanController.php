@@ -11,13 +11,26 @@ class PengaduanController extends Controller
     /**
      * Menampilkan daftar pengaduan pengguna.
      */
-    public function index()
-    {
-        // Menampilkan pengaduan yang diajukan oleh user yang sedang login
-        if (Auth::check()) {
-            $pengaduans = Pengaduan::where('username', Auth::user()->username)->get();
-            return view('pengaduan.index', compact('pengaduans'));
+        public function index()
+         {
+        // Memeriksa apakah pengguna terautentikasi
+          if (Auth::check()) {
+            $username = Auth::user()->username; // Mendapatkan username pengguna yang sedang login
+
+            // Mengambil semua pengaduan berdasarkan username
+            $pengaduan = Pengaduan::where('username', $username)->get();
+
+            // Memeriksa apakah pengaduan ditemukan
+            if ($pengaduan->isEmpty()) {
+                return response()->json(['message' => 'Tidak ada pengaduan ditemukan'], 404);
+            }
+
+            // Mengembalikan pengaduan dalam format JSON
+            return response()->json($pengaduan);
+             } else {
+            return response()->json(['message' => 'Pengguna tidak terautentikasi'], 401);
         }
+
 
         //return redirect()->route('login')->with('error', 'Silakan login untuk melihat pengaduan.');//
     }

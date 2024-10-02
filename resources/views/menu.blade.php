@@ -7,14 +7,14 @@
           </li>
           <li>
             <a href="{{ route('daftarpengaduan')}}">
-              <i class="nc-icon nc-tile-56"></i>
-              <p>Daftar Pengaduan</p>
+              <i class="nc-icon nc-single-02"></i>
+              <p>Data Pengadu</p>
             </a>
           </li>
           <li>
-            <a href="./map.html">
-              <i class="nc-icon nc-pin-3"></i>
-              <p>Maps</p>
+            <a href="{{ route('daftarlaporan')}}">
+              <i class="nc-icon nc-tile-56"></i>
+              <p>Daftar Laporan</p>
             </a>
           </li>
           <li>
