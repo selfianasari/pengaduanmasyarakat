@@ -1,59 +1,59 @@
-@extends('layouts/app')
+@extends('layouts.app')
 
 @section('content')
-<div class="page-heading">
-   <div class="page-title mb-3">
-      <h3>
-          <span class="bi bi-building"></span>
-          Data Pengadu
-      </h3>
-   </div>
-
-   <a href="{{ route('admin.pengaduan.create') }}" class="btn btn-primary mb-3">
-    <span class="bi bi-plus-circle"></span> Create New
-   </a>
-
 <section class="section">
     <div class="card">
+        <div class="card-header">
+            <h4>Daftar Pengaduan</h4>
+            <!-- Tombol Create New -->
+            <a href="{{ route('pengaduan.create') }}" class="btn btn-primary me-2">
+                <span class="bi bi-plus-circle"></span> Create New
+            </a>
+        </div>
         <div class="card-body">
-            <table id="datatable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nama</th>
-                        <th>NIK</th>
-                        <th>Tanggal Lahir</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($pengaduan as $item)
+            <!-- Tabel responsif agar tidak terlalu lebar -->
+            <div class="table-responsive">
+                <table id="datatable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>NIK</th>
+                            <th>Tanggal Lahir</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($pengaduans as $item)
                         <tr>
                             <td>{{ $item->name }}</td>
+                            <td>{{ $item->nik }}</td>
+                            <td>{{ $item->tanggal_lahir }}</td>
                             <td>
-                                <a href="{{ route('admin.pengaduan.show', $item->id) }}" class="btn btn-outline-secondary btn-sm me-1">
-                                    <span class="bi bi-eye"></span>
-                                    Show
+                                <!-- Tombol Show -->
+                                <a href="{{ route('pengaduan.show', $item->id) }}" class="btn btn-outline-secondary btn-sm me-1">
+                                    <span class="bi bi-eye"></span> Show
                                 </a>
-                                <a href="{{ route('admin.pengaduan.edit', $item->id) }}" class="btn btn-secondary btn-sm me-1">
-                                    <span class="bi bi-pencil"></span>
-                                    Edit
+
+                                <!-- Tombol Edit -->
+                                <a href="{{ route('pengaduan.edit', $item->id) }}" class="btn btn-secondary btn-sm me-1">
+                                    <span class="bi bi-pencil"></span> Edit
                                 </a>
-                                <a href="#" class="btn btn-danger btn-sm me-1" onclick="handleDestroy(`{{ route ('admin.pengaduan.destroy', $item->id) }}`)">
-                                    <span class="bi bi-trash">Hapus</span>
-                                </a>
-                                   </form>
+
+                                <!-- Tombol Delete, dengan konfirmasi -->
+                                <form action="{{ route('pengaduan.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm me-1" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                        <span class="bi bi-trash"></span> Hapus
+                                    </button>
+                                </form>
                             </td>
                         </tr>
-                    @endforeach  
-                </tbody>
-            </table>
+                        @endforeach  
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </section>
-</div>
-<form action="" id="form-delete" method="POST">
-    @csrf
-    @method("DELETE")
-</form>
 @endsection
-

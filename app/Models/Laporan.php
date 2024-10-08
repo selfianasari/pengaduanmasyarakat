@@ -11,7 +11,7 @@ class Laporan extends Model
     use HasFactory;
 
     protected $table = 'Laporan';
-    protected $fillanle = [
+    protected $fillable = [
         'username',
         'isi_laporan',
         'foto_bukti',

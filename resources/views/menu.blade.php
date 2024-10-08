@@ -6,7 +6,7 @@
             </a>
           </li>
           <li>
-            <a href="{{ route('daftarpengaduan')}}">
+            <a href="{{ route('datapengadu')}}">
               <i class="nc-icon nc-single-02"></i>
               <p>Data Pengadu</p>
             </a>
